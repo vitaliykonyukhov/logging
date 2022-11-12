@@ -1,0 +1,8 @@
+---
+fluentd_image: fluentd:v1.14.0-debian-1.0
+opensearch_plugin_version: 1.0.8
+fluentd_dir: /opt/fluentd
+elastic_host: opensearch-node1
+elastic_port: 9200
+elastic_user: "admin"
+elastic_password: "" # variable should be encrypted in ../../vaults/vaults.yml

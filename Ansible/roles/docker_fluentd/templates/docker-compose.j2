@@ -1,0 +1,30 @@
+version: '3'
+services:
+  fluentd:
+    container_name: fluentd
+    build:
+      context: ./
+    image: fluentd:opensearch
+    environment:
+      FLUENTD_CONF: fluent.conf
+    volumes:
+      - ./fluent.conf:/fluentd/etc/fluent.conf
+      - fluentd:/fluentd
+      - /var/log/nginx/access.log:/var/log/nginx/access.log:ro
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks: 
+      - opensearch-net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-async-connect: "true"
+        tag: docker.fluentd.fluentd
+
+volumes:
+  fluentd:
+
+networks:
+  opensearch-net:
+    external: true

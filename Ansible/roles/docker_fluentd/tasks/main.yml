@@ -1,0 +1,32 @@
+---
+- name: Create directory for Fluentd
+  file:
+    path: "{{ fluentd_dir }}"
+    state: directory
+
+- name: Ensure network exist
+  community.docker.docker_network:
+    name: opensearch-net
+
+- name: Create docker-compose file
+  template: 
+    src: docker-compose.j2 
+    dest: "{{ fluentd_dir }}/docker-compose.yml"
+
+- name: Create config file
+  template: 
+    src: fluent.conf.j2 
+    dest: "{{ fluentd_dir }}/fluent.conf"
+    mode: '0644'
+
+
+- name: Create Dockerfile
+  template: 
+    src: Dockerfile.j2 
+    dest: "{{ fluentd_dir }}/Dockerfile"
+
+- name: Apply docker-compose file
+  become: true
+  community.docker.docker_compose:
+    project_src: "{{ fluentd_dir }}/"
+    build: true

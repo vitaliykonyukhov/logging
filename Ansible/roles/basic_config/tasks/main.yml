@@ -1,0 +1,35 @@
+- name: Add admin user
+  import_tasks: admin_user.yml
+
+- name: Configure ssh access
+  import_tasks: ssh.yml
+
+- name: install basic apps
+  apt:
+    name:
+      - curl
+      - net-tools
+    update_cache: yes
+
+- name: update resolve.conf
+  ansible.builtin.template:
+    src: resolve.conf.j2
+    dest: /etc/systemd/resolved.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart systemd-resolved 
+
+- name: Ensure python package manager exist
+  apt:
+    name: 
+      - python3-pip
+    update_cache: yes
+  
+- name: Ensure python sdk exist
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: present
+

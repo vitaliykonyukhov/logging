@@ -1,0 +1,22 @@
+## role basic_config
+admin_user_name: admin
+connection_pub_key: "{{ lookup('file', '/home/whisper/.ssh/id_rsa.pub') }}"
+
+## role docker_opensearch
+opensearch_dir: /opt/opensearch
+fluentd_enable: true
+opensearch_version: 2.3.0
+dashboard_version: 2.3.0
+opensearch_port: 9200
+dashboard_port: 5601
+heap_size: 512m
+
+## role docker_fluentd
+fluentd_image: fluentd:v1.14.0-debian-1.0
+opensearch_plugin_version: 1.0.8
+fluentd_dir: /opt/fluentd
+elastic_host: opensearch-node1
+elastic_port: 9200
+elastic_user: "admin"
+
+

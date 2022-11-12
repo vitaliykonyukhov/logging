@@ -1,0 +1,95 @@
+<source>
+  @type forward
+  # @label @main
+  port 24224
+  bind 0.0.0.0
+</source>
+
+<source>
+  @type tail
+  path /var/log/nginx/access.log
+  pos_file /fluentd/log/access.log.pos
+  tag system.nginx
+  <parse>
+    @type nginx
+  </parse>
+</source>
+
+<filter docker.*.*>
+  @type record_transformer
+  <record>
+    hostname "#{Socket.gethostname}"
+    tag ${tag}
+    stack_name ${tag_parts[1]}
+    service_name ${tag_parts[2]}
+  </record>
+</filter>
+
+<match docker.*.*>
+  # @log_level debug
+  @type copy
+  <store>
+    @type opensearch
+    host "{{ elastic_host }}"
+    port "{{ elastic_port }}"
+    user "{{ elastic_user }}"
+    password "{{ elastic_password }}"
+    scheme https
+    ssl_verify false
+    index_name fluentd-docker
+    logstash_format true
+    logstash_prefix fluentd-docker
+    logstash_dateformat %Y.%m.%d
+    include_tag_key true
+    type_name fluentd
+    tag_key @log_name
+    <buffer>
+        @type file
+        path /fluentd/log/fluentd-docker
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 2
+        flush_interval 5s
+        retry_forever
+        retry_max_interval 30
+        chunk_limit_size 10M
+        queue_limit_length 8
+        overflow_action block
+    </buffer>
+  </store>
+</match>
+
+<match system.*>
+  # @log_level debug
+  @type copy
+  <store>
+    @type opensearch
+    host "{{ elastic_host }}"
+    port "{{ elastic_port }}"
+    user "{{ elastic_user }}"
+    password "{{ elastic_password }}"
+    scheme https
+    ssl_verify false
+    index_name fluentd-system
+    logstash_format true
+    logstash_prefix fluentd-system
+    logstash_dateformat %Y.%m.%d
+    include_tag_key true
+    type_name fluentd
+    tag_key @log_name
+    <buffer>
+        @type file
+        path /fluentd/log/fluentd-system
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 2
+        flush_interval 5s
+        retry_forever
+        retry_max_interval 30
+        chunk_limit_size 10M
+        queue_limit_length 8
+        overflow_action block
+    </buffer>
+  </store>
+</match>
+

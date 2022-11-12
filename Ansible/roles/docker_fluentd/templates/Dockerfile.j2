@@ -1,0 +1,5 @@
+FROM {{ fluentd_image }}
+USER root
+RUN gem install fluent-plugin-opensearch -v {{ opensearch_plugin_version }} &&\
+    usermod -a -G adm fluent
+USER fluent

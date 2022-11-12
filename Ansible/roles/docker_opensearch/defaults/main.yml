@@ -1,0 +1,8 @@
+---
+opensearch_dir: /opt/opensearch
+fluentd_enable: true
+opensearch_version: 2.3.0
+dashboard_version: 2.3.0
+opensearch_port: 9200
+dashboard_port: 5601
+heap_size: 512m

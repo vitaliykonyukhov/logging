@@ -1,0 +1,17 @@
+- name: Add admin user
+  user:
+    name: "{{ admin_user_name }}"
+    shell: /bin/bash
+    groups: sudo
+    password: "{{ admin_user_pass }}"
+    create_home: yes
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+    append: yes
+
+- name: Set authorized keys took from file
+  authorized_key:
+        user: "{{ admin_user_name }}"
+        state: present
+        key: "{{ connection_pub_key }}"
